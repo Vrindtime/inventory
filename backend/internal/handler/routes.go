@@ -5,18 +5,21 @@ import (
 	"net/http"
 )
 
-func DemoHandler(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintln(w,"Demo Handler")
+func DemoHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Demo Handler")
 }
 
 func RegisterRoutes(mux *http.ServeMux) {
+
+	warehouseHandler := NewWarehouseHandler()
+
 	mux.HandleFunc("GET /ping", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w,"pong")
+		fmt.Fprintln(w, "pong")
 	})
 
 	//Auth
-	mux.HandleFunc("POST /api/login",DemoHandler)
-	mux.HandleFunc("POST /api/signup",DemoHandler) //In a way will also call create User
+	mux.HandleFunc("POST /api/login", DemoHandler)
+	mux.HandleFunc("POST /api/signup", DemoHandler) //In a way will also call create User
 
 	// Users API
 	mux.HandleFunc("GET /api/users", DemoHandler)
@@ -38,9 +41,9 @@ func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/stocks/{id}", DemoHandler) // Increment or Decrement a stock value, this will affect stock log as well
 
 	// Warehouses
-	mux.HandleFunc("GET /api/warehouses", DemoHandler)
+	mux.HandleFunc("GET /api/warehouses", warehouseHandler.List)
+	mux.HandleFunc("POST /api/warehouses", warehouseHandler.Create)
 	mux.HandleFunc("GET /api/warehouses/{id}", DemoHandler)
-	mux.HandleFunc("POST /api/warehouses", DemoHandler)
 	mux.HandleFunc("PUT /api/warehouses/{id}", DemoHandler)
 	mux.HandleFunc("DELETE /api/warehouses/{id}", DemoHandler)
 	mux.HandleFunc("GET /api/warehouses/{id}/dashboard", DemoHandler) // Basically Reports we can do like ?=sales, ?=expense etc.
@@ -56,9 +59,9 @@ func RegisterRoutes(mux *http.ServeMux) {
 
 	// Orders
 	mux.HandleFunc("GET /api/orders", DemoHandler)
-	mux.HandleFunc("GET /api/orders/{id}", DemoHandler) // Shows Order Status as well
-	mux.HandleFunc("POST /api/orders", DemoHandler)     // the form in here will call from products and stock and in case a stock is low we call allocation
-	mux.HandleFunc("PUT /api/orders/{id}", DemoHandler) // have to create a middleware to let only admin void or edit this, the void will be recorded to order log as well
+	mux.HandleFunc("GET /api/orders/{id}", DemoHandler)   // Shows Order Status as well
+	mux.HandleFunc("POST /api/orders", DemoHandler)       // the form in here will call from products and stock and in case a stock is low we call allocation
+	mux.HandleFunc("PUT /api/orders/{id}", DemoHandler)   // have to create a middleware to let only admin void or edit this, the void will be recorded to order log as well
 	mux.HandleFunc("PATCH /api/orders/{id}", DemoHandler) // for status changes
 	mux.HandleFunc("DELETE /api/orders/{id}", DemoHandler)
 	mux.HandleFunc("GET /api/orders/{id}/dashboard", DemoHandler)
